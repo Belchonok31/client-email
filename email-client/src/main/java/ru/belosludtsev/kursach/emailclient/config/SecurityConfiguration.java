@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import ru.belosludtsev.kursach.emailclient.services.EmailAccountServices;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -29,7 +30,16 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
-                .cors(Customizer.withDefaults())
+                .cors(cors -> {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    // Настройте CORS, как вам нужно
+                    corsConfiguration.addAllowedOrigin("*");
+                    corsConfiguration.addAllowedMethod("*");
+                    corsConfiguration.addAllowedHeader("*");
+
+                    // Применяем настройки CORS
+                    cors.configurationSource(request -> corsConfiguration);
+                })
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers("/auth/**",
                                 "/emailTh/login","/static/**", "/emailTh")

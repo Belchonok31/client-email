@@ -30,6 +30,7 @@ public class EmailController {
     public List<EmailAccount> index(Model model){
         return emailAccountServices.findAll();
     }
+
     @GetMapping("")
     public EmailAccount show(Model model){
         EmailAccount emailAccount = authenticatedEmailAccountService.getAuthenticatedEmailAccount();
@@ -49,27 +50,27 @@ public class EmailController {
     }
     @GetMapping("/getMessagesIn")
     public List<MessageIn> getMessagesIn(@RequestParam(value="mark", required = false) Boolean mark,
-                                         @RequestParam(value="sortedByName", required = false) Boolean sort){
+                                         @RequestParam(value="sortedByName", required = false) Boolean sort,
+                                         @RequestParam(value="text", required = false) String text){
         EmailAccount emailAccount = authenticatedEmailAccountService.getAuthenticatedEmailAccount();
-        return emailAccountServices.findMessagesIn(emailAccount.getId(), mark, sort);
+        if (text == null) {
+            return emailAccountServices.findMessagesIn(emailAccount.getId(), mark, sort);
+        } else {
+            return emailAccountServices.searchMessagesIn(emailAccount.getId(), text);
+        }
     }
     @GetMapping("/getMessagesOut")
     public List<MessageOut> getMessagesOut(@RequestParam(value="mark", required = false) Boolean mark,
-                                           @RequestParam(value="sortedByName", required = false) Boolean sort){
+                                           @RequestParam(value="sortedByName", required = false) Boolean sort,
+                                           @RequestParam(value="text", required = false) String text){
         EmailAccount emailAccount = authenticatedEmailAccountService.getAuthenticatedEmailAccount();
-        return emailAccountServices.findMessagesOut(emailAccount.getId(), mark, sort);
+        if (text == null) {
+            return emailAccountServices.findMessagesOut(emailAccount.getId(), mark, sort);
+        } else {
+            return emailAccountServices.searchMessagesOut(emailAccount.getId(), text);
+        }
     }
 
-    @GetMapping("/getMessagesIn/search")
-    public List<MessageIn> searchMessagesIn(@RequestParam(value="text") String text){
-        EmailAccount emailAccount = authenticatedEmailAccountService.getAuthenticatedEmailAccount();
-        return emailAccountServices.searchMessagesIn(emailAccount.getId(), text);
-    }
-    @GetMapping("/getMessagesOut/search")
-    public List<MessageOut> searchMessagesOut(@RequestParam(value="text") String text){
-        EmailAccount emailAccount = authenticatedEmailAccountService.getAuthenticatedEmailAccount();
-        return emailAccountServices.searchMessagesOut(emailAccount.getId(), text);
-    }
     @GetMapping("/getMessagesIn/{idMessage}")
     public MessageIn getMessageIn(@PathVariable("idMessage") int idMessage){
         EmailAccount emailAccount = authenticatedEmailAccountService.getAuthenticatedEmailAccount();
